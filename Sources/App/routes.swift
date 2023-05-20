@@ -65,27 +65,67 @@ func routes(_ app: Application) throws {
     }
     
     
-    
-    
-    
-    
-    
-    
+    //MARK: - Teams Routes -
     
     // Create a new team
-    app.post("teams") { req -> Team in
-        let team = try req.content.decode(Team.self)
-        partyStoreViewModel.createTeam(team)
+    app.post("createTeam",":partyCode",":teamName") { req -> Team in
+        print("inside create a team")
+        guard let partyCode = req.parameters.get("partyCode", as: String.self),let teamName = req.parameters.get("teamName", as: String.self) else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        
+        
+        let team = Team(name: teamName)
+        partyStoreViewModel.addTeamToParty(party.id!, team: team.id!, name: team.name)
         return team
     }
     
+    app.get("getTeams",":partyCode") { req -> [Team] in
+        guard let partyCode = req.parameters.get("partyCode", as: String.self) else {
+            throw Abort(.badRequest)
+        }
+        return partyStoreViewModel.getAllTeams(partyCode: partyCode)
+    }
+    
+    
+    
     // Add player to a team
-    app.post("teams", ":teamID", "players") { req -> HTTPStatus in
-        let teamID = try req.parameters.require("teamID", as: UUID.self)
-        let player = try req.content.decode(Player.self)
+    app.post("joinTeam",":partyCode") { req -> HTTPStatus in
+        
+        guard let partyCode = req.parameters.get("partyCode", as: String.self),
+              let teamName = req.query[String.self, at: "teamName"] ,  let playerName = req.query[String.self, at: "nickName"]  else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        
+        guard let team = partyStoreViewModel.getTeamByName(partyCode: partyCode, teamName: teamName) else {
+            print("team not found")
+            throw Abort(.notFound)
+        }
+        
+        let playerID = UUID()
+        partyStoreViewModel.addPlayerToTeam(party.id!, playerID: playerID, teamID: team.id!, nickname: playerName)
+        
         // Add the player to the team with the provided teamID
         return .ok
     }
+    
+    
+    
+    
+    
+    
+    
+    
     
     // Start the game
     app.post("start", ":partyID") { req -> HTTPStatus in

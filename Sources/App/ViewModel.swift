@@ -4,7 +4,7 @@ import Foundation
 
 final class PartyStoreViewModel {
     @Published private var parties: [Party] = []
-    @Published private var teams: [Team] = []
+//    @Published private var teams: [Team] = []
     @Published private var players: [Player] = []
     @Published private var questions: [Question] = []
     @Published private var answers: [Answer] = []
@@ -48,16 +48,34 @@ final class PartyStoreViewModel {
     
     // MARK: - Team Functions
     
-    func createTeam(_ team: Team) {
-        teams.append(team)
+    
+    func addTeamToParty(_ partyID: UUID, team: UUID, name: String) {
+            guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+                return
+            }
+            
+            // Add the player to the party's team
+            let team = Team(name: name)
+            parties[partyIndex].teams.append(team)
+        }
+    
+    func getTeam(partyCode: String ,teamID: UUID) -> Team? {
+        let party = self.getPartyByCode(partyCode)
+        return party?.teams.first(where: { $0.id == teamID })
+    }
+    func getTeamByName(partyCode: String ,teamName: String) -> Team? {
+        let party = self.getPartyByCode(partyCode)
+        return party?.teams.first(where: { $0.name == teamName })
     }
     
-    func getTeam(_ teamID: UUID) -> Team? {
-        return teams.first(where: { $0.id == teamID })
+    func getAllTeams(partyCode: String) -> [Team] {
+        let party = self.getPartyByCode(partyCode)
+        return party?.teams ?? []
     }
     
-    func removeTeam(_ teamID: UUID) {
-        teams.removeAll(where: { $0.id == teamID })
+    func removeTeam(partyCode: String, teamID: UUID) {
+        var party = self.getPartyByCode(partyCode)
+        party?.teams.removeAll(where: { $0.id == teamID })
     }
     
     // MARK: - Player Functions
@@ -73,6 +91,20 @@ final class PartyStoreViewModel {
             // Add the player to the party's team
             let player = Player(name: nickname)
             parties[partyIndex].players.append(player)
+        }
+    
+    func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) {
+            guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+                return
+            }
+        guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.id == teamID }) else {
+            return
+        }
+        
+            // Add the player to the party's team
+            let player = Player(name: nickname)
+        
+        parties[partyIndex].teams[teamIndex].players.append(player)
         }
     
     func getPlayer(_ playerID: UUID) -> Player? {
