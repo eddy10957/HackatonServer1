@@ -16,6 +16,8 @@ struct Party: Content {
     var isGameStarted: Bool
     var teams: [Team]
     var players: [Player]
+    var teamLeaderBoard: [String : Int]
+    var playerLeaderBoard: [String : Int]
 
     init(code: String, isGameStarted: Bool = false, teams: [Team] = [], players: [Player] = []) {
         self.id = UUID()
@@ -23,6 +25,8 @@ struct Party: Content {
         self.isGameStarted = isGameStarted
         self.teams = teams
         self.players = players
+        self.teamLeaderBoard = [:]
+        self.playerLeaderBoard = [:]
     }
 }
 
@@ -66,28 +70,28 @@ struct Question: Content {
     }
 }
 
-struct Answer: Content {
-    var id: UUID?
-    var questionID: UUID
-    var playerID: UUID
-    var selectedAnswer: String
-
-    init(questionID: UUID, playerID: UUID, selectedAnswer: String) {
-        self.id = UUID()
-        self.questionID = questionID
-        self.playerID = playerID
-        self.selectedAnswer = selectedAnswer
-    }
-}
-
-struct LeaderboardEntry: Content {
-    var id: UUID?
-    var playerName: String
-    var score: Int
-
-    init(playerName: String, score: Int) {
-        self.id = UUID()
-        self.playerName = playerName
-        self.score = score
-    }
-}
+//struct Answer: Content {
+//    var id: UUID?
+//    var questionID: UUID
+//    var playerID: UUID
+//    var selectedAnswer: String
+//
+//    init(questionID: UUID, playerID: UUID, selectedAnswer: String) {
+//        self.id = UUID()
+//        self.questionID = questionID
+//        self.playerID = playerID
+//        self.selectedAnswer = selectedAnswer
+//    }
+//}
+//
+//struct LeaderboardEntry: Content {
+//    var id: UUID?
+//    var playerName: String
+//    var score: Int
+//
+//    init(playerName: String, score: Int) {
+//        self.id = UUID()
+//        self.playerName = playerName
+//        self.score = score
+//    }
+//}

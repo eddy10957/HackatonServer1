@@ -11,6 +11,8 @@ import Foundation
 //      - Subsmission of answers
 //      - Get questions
 //      - Dato che sono stronzo e ho fatto dei controlli sui nomi, non dobbiamo permettere nicknames e nomi di team uguali. Controllo che nono sono già presenti altri player e team con quel nome.
+//      - Chek party code non esiste prima di assegnarlo.
+//      - Change Party model by adding a boolean to change mode between individual or team ( POTREBBE NON SERVIRE PENSIAMOCI. )
 
 
 
@@ -175,21 +177,23 @@ func routes(_ app: Application) throws {
     //        return .ok
     //    }
     
-    // Get leaderboard (individual)
-    //    app.get("parties", ":partyID", "leaderboard", "individual") { req -> [LeaderboardEntry] in
-    //        let partyID = try req.parameters.require("partyID", as: UUID.self)
-    //        // Fetch and return the individual leaderboard for the party with the provided partyID
-    //        let leaderboard = partyStoreViewModel.getIndividualLeaderboard(partyID)
-    //        return leaderboard
-    //    }
-    //
-    //    // Get leaderboard (team)
-    //    app.get("parties", ":partyID", "leaderboard", "team") { req -> [LeaderboardEntry] in
-    //        let partyID = try req.parameters.require("partyID", as: UUID.self)
-    //        // Fetch and return the team leaderboard for the party with the provided partyID
-    //        let leaderboard = partyStoreViewModel.getTeamLeaderboard(partyID)
-    //        return leaderboard
-    //    }
+    
+    //MARK: - Leaderboard Routes -
+//     Get leaderboard (individual)
+    app.get("leaderboard", ":partyCode", "individual") { req -> [String:Int] in
+            let partyCode = try req.parameters.require("partyCode", as: String.self)
+            // Fetch and return the individual leaderboard for the party with the provided partyID
+            let leaderboard = partyStoreViewModel.getLeaderBoard(partyCode: partyCode, mode: "individual")
+            return leaderboard!
+        }
+    
+        // Get leaderboard (team)
+    app.get("leaderboard", ":partyCode", "team") { req -> [String:Int] in
+            let partyCode = try req.parameters.require("partyCode", as: String.self)
+            // Fetch and return the team leaderboard for the party with the provided partyID
+            let leaderboard = partyStoreViewModel.getLeaderBoard(partyCode: partyCode, mode: "team")
+            return leaderboard!
+        }
     
     
 }

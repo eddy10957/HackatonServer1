@@ -22,7 +22,7 @@ final class PartyStoreViewModel {
         Question(text: "What is a common challenge when managing remote teams?", answers: ["Building trust", "In-person meetings", "Physical workspace management", "Strict supervision"], correctAnswer: "Building trust")
     ]
 
-    @Published private var leaderboard: [LeaderboardEntry] = []
+//    @Published private var leaderboard: [LeaderboardEntry] = []
     
     
     // MARK: - Party Functions
@@ -72,6 +72,7 @@ final class PartyStoreViewModel {
         // Add the player to the party's team
         let team = Team(name: name)
         parties[partyIndex].teams.append(team)
+        parties[partyIndex].teamLeaderBoard[team.name] = 0
     }
     
     func getTeam(partyCode: String ,teamID: UUID) -> Team? {
@@ -103,6 +104,7 @@ final class PartyStoreViewModel {
         // Add the player to the party's team
         let player = Player(name: nickname)
         parties[partyIndex].players.append(player)
+        parties[partyIndex].playerLeaderBoard[player.name] = 0
     }
     
     func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) {
@@ -131,6 +133,22 @@ final class PartyStoreViewModel {
         }else{
             return parties[partyIndex].players.first(where: { $0.id == playerID })
         }
+    }
+    
+    //MARK: - Leaderboard Functions -
+    
+    func getLeaderBoard(partyCode: String, mode: String)->[String:Int]?{
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return nil
+        }
+        var leaderboard : [String: Int] = [:]
+        if mode == "team"{
+            leaderboard = parties[partyIndex].teamLeaderBoard
+        }else{
+            leaderboard = parties[partyIndex].playerLeaderBoard
+        }
+        
+        return leaderboard
     }
     
 }
