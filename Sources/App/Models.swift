@@ -55,11 +55,13 @@ struct Team: Content {
 struct Question: Content {
     var id: UUID?
     var text: String
+    var answers: [String]
     var correctAnswer: String
 
-    init(text: String, correctAnswer: String) {
+    init(text: String, answers: [String], correctAnswer: String) {
         self.id = UUID()
         self.text = text
+        self.answers = answers
         self.correctAnswer = correctAnswer
     }
 }

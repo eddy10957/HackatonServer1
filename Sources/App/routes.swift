@@ -10,6 +10,7 @@ import Foundation
 //      - Leaderboard, I don't know how to do it, propably we will need a Model refactoring
 //      - Subsmission of answers
 //      - Get questions
+//      - Dato che sono stronzo e ho fatto dei controlli sui nomi, non dobbiamo permettere nicknames e nomi di team uguali. Controllo che nono sono già presenti altri player e team con quel nome.
 
 
 
@@ -143,7 +144,21 @@ func routes(_ app: Application) throws {
     
     
     
-    
+    //MARK: - Player Routes-
+
+    //TODO: Restrutturare. Fa schifo scritta così
+    app.get("player",":playerID") { req -> Player in
+        guard let playerID = req.parameters.get("playerID", as: UUID.self),
+              let partyID = req.query[UUID.self, at: "partyID"] ,  let teamName = req.query[String.self, at: "teamName"]  else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let player = partyStoreViewModel.getPlayer(playerID: playerID, partyID: partyID, teamName: teamName == "nil" ? nil : teamName ) else {
+            throw Abort(.notFound)
+        }
+        return player
+       
+    }
     
     
     

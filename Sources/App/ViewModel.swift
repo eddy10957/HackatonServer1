@@ -4,17 +4,25 @@ import Foundation
 
 final class PartyStoreViewModel {
     @Published private var parties: [Party] = []
-//    @Published private var teams: [Team] = []
-    @Published private var players: [Player] = []
-    @Published private var questions: [Question] = []
-    @Published private var answers: [Answer] = []
+    // Useless (?)
+    //    @Published private var teams: [Team] = []
+//    @Published private var players: [Player] = []
+    
+    
+    @Published private var questions: [Question] = [
+        Question(text: "What is a common collaboration tool used in remote teams?", answers: ["Slack", "Zoom", "Microsoft Teams", "Google Meet"], correctAnswer: "Slack"),
+        Question(text: "What is an essential skill for effective remote communication?", answers: ["Active listening", "Body language", "Hand gestures", "Eye contact"], correctAnswer: "Active listening"),
+        Question(text: "What is a benefit of remote work?", answers: ["Flexible schedule", "Long commutes", "Strict dress code", "Limited job opportunities"], correctAnswer: "Flexible schedule"),
+        Question(text: "What is a challenge of remote work?", answers: ["Isolation", "Constant interruptions", "Commute time", "Limited work-life balance"], correctAnswer: "Isolation"),
+        Question(text: "Which technology enables remote team collaboration on code?", answers: ["Git", "Subversion", "Mercurial", "CVS"], correctAnswer: "Git"),
+        Question(text: "What is a key factor for successful remote project management?", answers: ["Clear communication", "Micromanagement", "In-person meetings", "Strict deadlines"], correctAnswer: "Clear communication"),
+        Question(text: "Which time zone difference can often be challenging in global remote teams?", answers: ["12 hours", "3 hours", "6 hours", "9 hours"], correctAnswer: "12 hours"),
+        Question(text: "What is a recommended practice to stay productive while working remotely?", answers: ["Create a dedicated workspace", "Work in bed", "Watch TV shows while working", "Ignore deadlines"], correctAnswer: "Create a dedicated workspace"),
+        Question(text: "Which online tool can be used for remote project management?", answers: ["Trello", "Physical whiteboard", "Excel spreadsheet", "Notepad"], correctAnswer: "Trello"),
+        Question(text: "What is a common challenge when managing remote teams?", answers: ["Building trust", "In-person meetings", "Physical workspace management", "Strict supervision"], correctAnswer: "Building trust")
+    ]
+
     @Published private var leaderboard: [LeaderboardEntry] = []
-    
-    // Other properties and methods as needed
-    
-    init() {
-        // Initialize your data here if needed
-    }
     
     
     // MARK: - Party Functions
@@ -29,7 +37,7 @@ final class PartyStoreViewModel {
     
     func getPartyByCode(_ code: String) -> Party? {
         print("Get party by code : \(code)")
-            return parties.first { $0.code == code }
+        return parties.first { $0.code == code }
     }
     
     func getAllParties() -> [Party]{
@@ -51,20 +59,20 @@ final class PartyStoreViewModel {
     }
     
     
-
+    
     
     // MARK: - Team Functions
     
     
     func addTeamToParty(_ partyID: UUID, team: UUID, name: String) {
-            guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-                return
-            }
-            
-            // Add the player to the party's team
-            let team = Team(name: name)
-            parties[partyIndex].teams.append(team)
+        guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+            return
         }
+        
+        // Add the player to the party's team
+        let team = Team(name: name)
+        parties[partyIndex].teams.append(team)
+    }
     
     func getTeam(partyCode: String ,teamID: UUID) -> Team? {
         let party = self.getPartyByCode(partyCode)
@@ -86,72 +94,43 @@ final class PartyStoreViewModel {
     }
     
     // MARK: - Player Functions
-    
-    func addPlayer(_ player: Player) {
-        players.append(player)
-    }
+   
     func addPlayerToParty(_ partyID: UUID, playerID: UUID, nickname: String) {
-            guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-                return
-            }
-            
-            // Add the player to the party's team
-            let player = Player(name: nickname)
-            parties[partyIndex].players.append(player)
+        guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+            return
         }
+        
+        // Add the player to the party's team
+        let player = Player(name: nickname)
+        parties[partyIndex].players.append(player)
+    }
     
     func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) {
-            guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-                return
-            }
+        guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+            return
+        }
         guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.id == teamID }) else {
             return
         }
         
-            // Add the player to the party's team
-            let player = Player(name: nickname)
+        // Add the player to the party's team
+        let player = Player(name: nickname)
         
         parties[partyIndex].teams[teamIndex].players.append(player)
+    }
+    
+    func getPlayer(playerID: UUID, partyID: UUID, teamName: String? = nil) -> Player? {
+        guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
+            return nil
         }
-    
-    func getPlayer(_ playerID: UUID) -> Player? {
-        return players.first(where: { $0.id == playerID })
+        if let teamID = teamName {
+            guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.name == teamID }) else {
+                return nil
+            }
+            return parties[partyIndex].teams[teamIndex].players.first(where: { $0.id == playerID })
+        }else{
+            return parties[partyIndex].players.first(where: { $0.id == playerID })
+        }
     }
-    
-    // MARK: - Answer Functions
-    
-    func submitAnswer(_ answer: Answer) {
-        answers.append(answer)
-    }
-    
-    func getPlayerAnswers(_ playerID: UUID) -> [Answer] {
-        return answers.filter({ $0.playerID == playerID })
-    }
-    
-    
-//    func getPartyAnswers(_ partyID: UUID) -> [Answer] {
-//        return answers.filter({ $0.partyID == partyID })
-//    }
-//    
-//    // MARK: - Leaderboard Functions
-//    
-//    func getIndividualLeaderboard(_ partyID: UUID) -> [LeaderboardEntry] {
-//        let partyAnswers = getPartyAnswers(partyID)
-//        var leaderboard: [LeaderboardEntry] = []
-//        
-//        // Logic to calculate individual scores and create leaderboard entries
-//        
-//        return leaderboard
-//    }
-//    
-//    func getTeamLeaderboard(_ partyID: UUID) -> [LeaderboardEntry] {
-//        let partyAnswers = getPartyAnswers(partyID)
-//        var leaderboard: [LeaderboardEntry] = []
-//        
-//        // Logic to calculate team scores and create leaderboard entries
-//        
-//        return leaderboard
-//    }
-    
     
 }
