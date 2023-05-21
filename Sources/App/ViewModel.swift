@@ -43,6 +43,13 @@ final class PartyStoreViewModel {
         parties.removeAll(where: { $0.code == partyCode })
     }
     
+    func startParty(partyCode: String){
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return
+        }
+        parties[partyIndex].isGameStarted = true
+    }
+    
     
 
     

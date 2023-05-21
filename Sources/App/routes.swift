@@ -1,6 +1,19 @@
 import Vapor
 import Foundation
 
+
+//TODO: - Check If party is not started in order to add ppl or teams to it
+//      - Check if party is Group or individual and accept only the correct way to add ppl to party
+//      - Change model of question in order to have all the different minigames under that struct
+//      - When party is created we need to generate all the quiz
+//      - Point logic, we need to calculate points
+//      - Leaderboard, I don't know how to do it, propably we will need a Model refactoring
+//      - Subsmission of answers
+//      - Get questions
+
+
+
+
 let partyStoreViewModel = PartyStoreViewModel()
 
 
@@ -64,6 +77,13 @@ func routes(_ app: Application) throws {
         return party
     }
     
+    // Start the game
+    app.post("start", ":partyID") { req -> HTTPStatus in
+        let partyCode = try req.parameters.require("partyID", as: String.self)
+        // Start the game for the party with the provided partyID
+        partyStoreViewModel.startParty(partyCode: partyCode)
+        return .ok
+    }
     
     //MARK: - Teams Routes -
     
@@ -127,12 +147,7 @@ func routes(_ app: Application) throws {
     
     
     
-    // Start the game
-    app.post("start", ":partyID") { req -> HTTPStatus in
-        let partyID = try req.parameters.require("partyID", as: UUID.self)
-        // Start the game for the party with the provided partyID
-        return .ok
-    }
+   
     
   
     
