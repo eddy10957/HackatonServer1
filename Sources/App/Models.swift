@@ -13,15 +13,17 @@ import Vapor
 struct Party: Content {
     var id: UUID?
     var code: String
+    var partyName:  String
     var isGameStarted: Bool
     var teams: [Team]
     var players: [Player]
     var teamLeaderBoard: [String : Int]
     var playerLeaderBoard: [String : Int]
 
-    init(code: String, isGameStarted: Bool = false, teams: [Team] = [], players: [Player] = []) {
+    init(code: String,name: String, isGameStarted: Bool = false, teams: [Team] = [], players: [Player] = []) {
         self.id = UUID()
         self.code = code
+        self.partyName = name
         self.isGameStarted = isGameStarted
         self.teams = teams
         self.players = players

@@ -35,11 +35,14 @@ func routes(_ app: Application) throws {
     
     
     // Create a new party
-    app.post("createParty") { req -> Party in
+    app.post("createParty",":partyName") { req -> Party in
         print("create party req")
+        guard let partyName = req.parameters.get("partyName", as: String.self) else{
+            throw Abort(.badRequest)
+        }
         let partyCode = generatePartyCode()
         // Create the party and add it to the store
-        let party = Party(code: partyCode)
+        let party = Party(code: partyCode,name: partyName)
         partyStoreViewModel.createParty(party)
         
         return party
