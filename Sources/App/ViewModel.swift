@@ -170,4 +170,15 @@ final class PartyStoreViewModel {
         parties[partyIndex].questions.append(contentsOf: questions)
         return true
     }
+    
+    func questionNumber(partyCode: String,index: Int) -> Question?{
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return nil
+        }
+        return parties[partyIndex].questions[index]
+    }
+    
+    func getQuestionBank()->[Question]{
+        return self.questions
+    }
 }

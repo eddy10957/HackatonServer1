@@ -5,9 +5,7 @@ import Foundation
 //TODO: - Check If party is not started in order to add ppl or teams to it
 //      - Check if party is Group or individual and accept only the correct way to add ppl to party
 //      - Change model of question in order to have all the different minigames under that struct
-//      - When party is created we need to generate all the quiz
 //      - Point logic, we need to calculate points
-//      - Leaderboard, I don't know how to do it, propably we will need a Model refactoring
 //      - Subsmission of answers
 //      - Get questions
 //      - Dato che sono stronzo e ho fatto dei controlli sui nomi, non dobbiamo permettere nicknames e nomi di team uguali. Controllo che nono sono già presenti altri player e team con quel nome.
@@ -219,5 +217,23 @@ func routes(_ app: Application) throws {
         partyStoreViewModel.addQuestionToParty(partyCode: partyCode, questions: questions)
         return questions
     }
+    
+    app.get("question",":partyCode",":index"){ req -> Question in
+        let partyCode = try req.parameters.require("partyCode", as: String.self)
+        let index = try req.parameters.require("index", as: Int.self)
+        guard let _ = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        guard let question = partyStoreViewModel.questionNumber(partyCode: partyCode, index: index) else {
+            throw Abort(.notFound)
+        }
+        return question
+    }
+    
+    app.get("questionBank"){ req -> [Question] in
+        return partyStoreViewModel.getQuestionBank()
+    }
+    
     
 }
