@@ -160,4 +160,14 @@ final class PartyStoreViewModel {
         return leaderboard
     }
     
+    
+    //MARK: - Questions Functions -
+    
+    func addQuestionToParty(partyCode: String, questions: [Question])-> Bool{
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return false
+        }
+        parties[partyIndex].questions.append(contentsOf: questions)
+        return true
+    }
 }

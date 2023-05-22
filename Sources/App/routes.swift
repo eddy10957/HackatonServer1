@@ -83,7 +83,9 @@ func routes(_ app: Application) throws {
     app.get("parties", ":partyID") { req -> Party in
         let partyCode = try req.parameters.require("partyID", as: String.self)
         // Fetch the party details from the ViewModel using the partyID
-        let party = partyStoreViewModel.getPartyByCode(partyCode)!
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            throw Abort(.badRequest)
+        }
         return party
     }
     
@@ -202,5 +204,20 @@ func routes(_ app: Application) throws {
         return leaderboard!
     }
     
+    
+    //MARK: - Questions Routes -
+    
+    app.post("postQuestions", ":partyCode"){ req -> [Question] in
+        guard let partyCode = try? req.parameters.require("partyCode", as: String.self),
+              let questions = try? req.content.decode([Question].self) else {
+            throw Abort(.badRequest)
+        }
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        partyStoreViewModel.addQuestionToParty(partyCode: partyCode, questions: questions)
+        return questions
+    }
     
 }

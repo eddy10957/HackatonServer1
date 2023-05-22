@@ -19,6 +19,7 @@ struct Party: Content {
     var players: [Player]
     var teamLeaderBoard: [String : Int]
     var playerLeaderBoard: [String : Int]
+    var questions: [Question]
 
     init(code: String,name: String, isGameStarted: Bool = false, teams: [Team] = [], players: [Player] = []) {
         self.id = UUID()
@@ -29,6 +30,7 @@ struct Party: Content {
         self.players = players
         self.teamLeaderBoard = [:]
         self.playerLeaderBoard = [:]
+        self.questions = []
     }
 }
 
@@ -58,14 +60,14 @@ struct Team: Content {
     }
 }
 
-struct Question: Content {
-    var id: UUID?
+struct Question: Content, Codable {
+//    var id: UUID?
     var text: String
     var answers: [String]
     var correctAnswer: String
 
     init(text: String, answers: [String], correctAnswer: String) {
-        self.id = UUID()
+//        self.id = UUID()
         self.text = text
         self.answers = answers
         self.correctAnswer = correctAnswer
