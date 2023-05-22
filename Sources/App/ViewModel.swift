@@ -96,15 +96,24 @@ final class PartyStoreViewModel {
     
     // MARK: - Player Functions
    
-    func addPlayerToParty(_ partyID: UUID, playerID: UUID, nickname: String) {
+    func addPlayerToParty(_ partyID: UUID, playerID: UUID, nickname: String) -> String {
         guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-            return
+            return ""
         }
         
-        // Add the player to the party's team
-        let player = Player(name: nickname)
-        parties[partyIndex].players.append(player)
-        parties[partyIndex].playerLeaderBoard[player.name] = 0
+        // TODO: Aggiungi controllo nickname
+        
+        if parties[partyIndex].players.contains(where: {$0.name == nickname}) {
+            return "Nickname Already Exists"
+        } else {
+            // Add the player to the party's team
+            let player = Player(name: nickname)
+            parties[partyIndex].players.append(player)
+            parties[partyIndex].playerLeaderBoard[player.name] = 0
+            return "Player Added to the Party"
+        }
+        
+       
     }
     
     func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) {
