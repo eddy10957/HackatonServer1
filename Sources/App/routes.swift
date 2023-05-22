@@ -151,6 +151,10 @@ func routes(_ app: Application) throws {
     
     
     
+
+
+    
+    
     
     
     //MARK: - Player Routes-
@@ -169,20 +173,20 @@ func routes(_ app: Application) throws {
         
     }
     
-    
-    
-    
-    
-    
-    
-    
-    // Submit an answer
-    //    app.post("parties", ":partyID", "answers") { req -> HTTPStatus in
-    //        let partyID = try req.parameters.require("partyID", as: UUID.self)
-    //        let answer = try req.content.decode(Answer.self)
-    //        partyStoreViewModel.submitAnswer(answer)
-    //        return .ok
-    //    }
+    app.post("playerPoint",":partyCode") { req -> HTTPStatus in
+        
+        guard let partyCode = req.parameters.get("partyCode", as: String.self),
+              let player = req.query[String.self, at: "nickName"] ,  let points = req.query[Int.self, at: "points"]  else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        partyStoreViewModel.updatePlayerPoint(playerName: player, partyCode: partyCode, points: points)
+        return .ok
+    }
     
     
     //MARK: - Leaderboard Routes -
@@ -190,8 +194,10 @@ func routes(_ app: Application) throws {
     app.get("leaderboard", ":partyCode", "individual") { req -> [String:Int] in
         let partyCode = try req.parameters.require("partyCode", as: String.self)
         // Fetch and return the individual leaderboard for the party with the provided partyID
-        let leaderboard = partyStoreViewModel.getLeaderBoard(partyCode: partyCode, mode: "individual")
-        return leaderboard!
+        guard let leaderboard = partyStoreViewModel.getLeaderBoard(partyCode: partyCode, mode: "individual") else {
+           throw Abort(.badRequest)
+        }
+        return leaderboard
     }
     
     // Get leaderboard (team)
@@ -234,6 +240,8 @@ func routes(_ app: Application) throws {
     app.get("questionBank"){ req -> [Question] in
         return partyStoreViewModel.getQuestionBank()
     }
+    
+    
     
     
 }

@@ -143,6 +143,41 @@ final class PartyStoreViewModel {
             return parties[partyIndex].players.first(where: { $0.id == playerID })
         }
     }
+    func getPlayerByName(playerName: String, partyCode: String, teamName: String? = nil) -> Player? {
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return nil
+        }
+        if let teamID = teamName {
+            guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.name == teamID }) else {
+                return nil
+            }
+            return parties[partyIndex].teams[teamIndex].players.first(where: { $0.name == playerName })
+        }else{
+            return parties[partyIndex].players.first(where: { $0.name == playerName })
+        }
+    }
+    
+    func updatePlayerPoint(playerName: String, partyCode: String,points: Int,teamName: String? = nil) {
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return
+        }
+        if let teamID = teamName {
+            guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.name == teamID }) else {
+                return
+            }
+            if let playerIndex = parties[partyIndex].teams[teamIndex].players.firstIndex(where: { $0.name == playerName }) {
+                parties[partyIndex].teams[teamIndex].players[playerIndex].score += points
+            } else {
+                return
+            }
+        }else{
+            if let playerIndex = parties[partyIndex].players.firstIndex(where: { $0.name == playerName }) {
+                parties[partyIndex].players[playerIndex].score += points
+            } else {
+                return
+            }
+        }
+    }
     
     //MARK: - Leaderboard Functions -
     
