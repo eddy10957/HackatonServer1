@@ -5,11 +5,11 @@ import Foundation
 //TODO: - Check If party is not started in order to add ppl or teams to it
 //      - Check if party is Group or individual and accept only the correct way to add ppl to party
 //      - Change model of question in order to have all the different minigames under that struct
-//      - Point logic, we need to calculate points
-//      - Subsmission of answers
-//      - Get questions
+
+
+
 //      - Dato che sono stronzo e ho fatto dei controlli sui nomi, non dobbiamo permettere nicknames e nomi di team uguali. Controllo che nono sono già presenti altri player e team con quel nome.
-//      - Chek party code non esiste prima di assegnarlo.
+//      - Check party code non esiste prima di assegnarlo.
 //      - Change Party model by adding a boolean to change mode between individual or team ( POTREBBE NON SERVIRE PENSIAMOCI. )
 
 
@@ -41,9 +41,11 @@ func routes(_ app: Application) throws {
         let partyCode = generatePartyCode()
         // Create the party and add it to the store
         let party = Party(code: partyCode,name: partyName)
-        partyStoreViewModel.createParty(party)
-        
-        return party
+        if partyStoreViewModel.createParty(party) {
+            return party
+        } else {
+            throw Abort(.imATeapot)
+        }
     }
     
     // Join a party
@@ -63,13 +65,11 @@ func routes(_ app: Application) throws {
         
         // Join the party and add the player to the team
         let playerID = UUID()
-        if partyStoreViewModel.addPlayerToParty(party.id!, playerID: playerID, nickname: nickname) == "Player Added to the Party" {
+        if partyStoreViewModel.addPlayerToParty(party.id!, playerID: playerID, nickname: nickname) {
             return .ok
-        } else if partyStoreViewModel.addPlayerToParty(party.id!, playerID: playerID, nickname: nickname)  == "Nickname Already Exists" {
+        } else {
             throw Abort(.imATeapot)
         }
-        
-        return .ok
     }
     
     // Get all parties
@@ -111,8 +111,11 @@ func routes(_ app: Application) throws {
         
         
         let team = Team(name: teamName)
-        partyStoreViewModel.addTeamToParty(party.id!, team: team.id!, name: team.name)
-        return team
+        if partyStoreViewModel.addTeamToParty(party.id!, team: team.id!, name: team.name) {
+            return team
+        } else {
+            throw Abort(.imATeapot)
+        }
     }
     
     app.get("getTeams",":partyCode") { req -> [Team] in
@@ -143,10 +146,14 @@ func routes(_ app: Application) throws {
         }
         
         let playerID = UUID()
-        partyStoreViewModel.addPlayerToTeam(party.id!, playerID: playerID, teamID: team.id!, nickname: playerName)
+        if partyStoreViewModel.addPlayerToTeam(party.id!, playerID: playerID, teamID: team.id!, nickname: playerName) {
+            // Add the player to the team with the provided teamID
+            return .ok
+        } else {
+            throw Abort(.imATeapot)
+        }
         
-        // Add the player to the team with the provided teamID
-        return .ok
+       
     }
     
     

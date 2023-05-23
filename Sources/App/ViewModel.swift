@@ -27,8 +27,13 @@ final class PartyStoreViewModel {
     
     // MARK: - Party Functions
     
-    func createParty(_ party: Party) {
-        parties.append(party)
+    func createParty(_ party: Party) -> Bool{
+        if parties.contains(where: {$0.partyName == party.partyName}) {
+            return false
+        } else {
+            parties.append(party)
+            return true
+        }
     }
     
     func getParty(_ partyID: UUID) -> Party? {
@@ -64,15 +69,21 @@ final class PartyStoreViewModel {
     // MARK: - Team Functions
     
     
-    func addTeamToParty(_ partyID: UUID, team: UUID, name: String) {
+    func addTeamToParty(_ partyID: UUID, team: UUID, name: String) -> Bool {
         guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-            return
+            return true
         }
         
-        // Add the player to the party's team
-        let team = Team(name: name)
-        parties[partyIndex].teams.append(team)
-        parties[partyIndex].teamLeaderBoard[team.name] = 0
+        // Check if the team name already exists
+        if parties[partyIndex].teams.contains(where: {$0.name == name}) {
+            return false
+        } else {
+            
+            let team = Team(name: name)
+            parties[partyIndex].teams.append(team)
+            parties[partyIndex].teamLeaderBoard[team.name] = 0
+            return true
+        }
     }
     
     func getTeam(partyCode: String ,teamID: UUID) -> Team? {
@@ -96,38 +107,44 @@ final class PartyStoreViewModel {
     
     // MARK: - Player Functions
    
-    func addPlayerToParty(_ partyID: UUID, playerID: UUID, nickname: String) -> String {
+    func addPlayerToParty(_ partyID: UUID, playerID: UUID, nickname: String) -> Bool {
         guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-            return ""
+            return true
         }
         
         // TODO: Aggiungi controllo nickname
         
-        if parties[partyIndex].players.contains(where: {$0.name == nickname}) {
-            return "Nickname Already Exists"
+        if parties[partyIndex].players.contains(where: {$0.name.lowercased() == nickname.lowercased()}) {
+            return false
         } else {
             // Add the player to the party's team
             let player = Player(name: nickname)
             parties[partyIndex].players.append(player)
             parties[partyIndex].playerLeaderBoard[player.name] = 0
-            return "Player Added to the Party"
+            return true
         }
         
        
     }
     
-    func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) {
+    func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) -> Bool {
         guard let partyIndex = parties.firstIndex(where: { $0.id == partyID }) else {
-            return
+            return true
         }
         guard let teamIndex = parties[partyIndex].teams.firstIndex(where: { $0.id == teamID }) else {
-            return
+            return true
         }
         
-        // Add the player to the party's team
-        let player = Player(name: nickname)
-        
-        parties[partyIndex].teams[teamIndex].players.append(player)
+        // Check if already exist a player with that nickname
+        if  parties[partyIndex].teams[teamIndex].players.contains(where: {$0.name.lowercased() == nickname.lowercased()}) {
+            return false
+        } else {
+            // Add the player to the party's team
+            let player = Player(name: nickname)
+            parties[partyIndex].teams[teamIndex].players.append(player)
+            return true
+        }
+
     }
     
     func getPlayer(playerID: UUID, partyID: UUID, teamName: String? = nil) -> Player? {
