@@ -9,6 +9,7 @@ final class PartyStoreViewModel {
 //    @Published private var players: [Player] = []
     
     
+    
     @Published private var questions: [Question] = [
         Question(text: "What is a common collaboration tool used in remote teams?", answers: ["Slack", "Zoom", "Microsoft Teams", "Google Meet"], correctAnswer: "Slack"),
         Question(text: "What is an essential skill for effective remote communication?", answers: ["Active listening", "Body language", "Hand gestures", "Eye contact"], correctAnswer: "Active listening"),
@@ -26,6 +27,28 @@ final class PartyStoreViewModel {
     
     
     // MARK: - Party Functions
+    
+    func generatePartyCode() -> String {
+        let characters = "0123456789"
+        let codeLength = 4
+        let code = String((0..<codeLength).map { _ in characters.randomElement()! })
+            if parties.contains(where: {$0.code == code}) {
+            var anotherCode = String((0..<codeLength).map { _ in characters.randomElement()! })
+            var codeExist = true
+            while codeExist {
+                if parties.contains(where: {$0.code == anotherCode}) {
+                    anotherCode = String((0..<codeLength).map { _ in characters.randomElement()! })
+                } else {
+                    codeExist = false
+                }
+            }
+            
+            return anotherCode
+        } else {
+
+            return code
+        }
+    }
     
     func createParty(_ party: Party) -> Bool{
         if parties.contains(where: {$0.partyName == party.partyName}) {

@@ -2,11 +2,10 @@ import Vapor
 import Foundation
 
 
-//TODO: 
+//TODO:
 //      - Check if party is Group or individual and accept only the correct way to add ppl to party
 //      - Change model of question in order to have all the different minigames under that struct
 
-//      - Check party code non esiste prima di assegnarlo.
 //      - Change Party model by adding a boolean to change mode between individual or team ( POTREBBE NON SERVIRE PENSIAMOCI. )
 
 
@@ -16,13 +15,13 @@ let partyStoreViewModel = PartyStoreViewModel()
 
 
 
-func generatePartyCode() -> String {
-    let characters = "0123456789"
-    let codeLength = 4
-    let code = String((0..<codeLength).map { _ in characters.randomElement()! })
-    
-    return code
-}
+//func generatePartyCode() -> String {
+//    let characters = "0123456789"
+//    let codeLength = 4
+//    let code = String((0..<codeLength).map { _ in characters.randomElement()! })
+//
+//    return code
+//}
 
 func routes(_ app: Application) throws {
     
@@ -35,7 +34,7 @@ func routes(_ app: Application) throws {
         guard let partyName = req.parameters.get("partyName", as: String.self) else{
             throw Abort(.badRequest)
         }
-        let partyCode = generatePartyCode()
+        let partyCode = partyStoreViewModel.generatePartyCode()
         // Create the party and add it to the store
         let party = Party(code: partyCode,name: partyName)
         if partyStoreViewModel.createParty(party) {
