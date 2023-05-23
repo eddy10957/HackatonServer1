@@ -150,7 +150,20 @@ func routes(_ app: Application) throws {
     }
     
     
-    
+    app.post("teamPoint",":partyCode") { req -> HTTPStatus in
+        
+        guard let partyCode = req.parameters.get("partyCode", as: String.self),
+              let player = req.query[String.self, at: "nickName"] ,  let points = req.query[Int.self, at: "points"], let teamName = req.query[String.self, at: "teamName"]  else {
+            throw Abort(.badRequest)
+        }
+        
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        partyStoreViewModel.updatePoint(playerName: player, partyCode: partyCode, points: points, teamName: teamName)
+        return .ok
+    }
 
 
     
@@ -184,7 +197,7 @@ func routes(_ app: Application) throws {
             print("partycode not found")
             throw Abort(.notFound)
         }
-        partyStoreViewModel.updatePlayerPoint(playerName: player, partyCode: partyCode, points: points)
+        partyStoreViewModel.updatePoint(playerName: player, partyCode: partyCode, points: points)
         return .ok
     }
     

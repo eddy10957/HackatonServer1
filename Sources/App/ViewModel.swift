@@ -157,7 +157,7 @@ final class PartyStoreViewModel {
         }
     }
     
-    func updatePlayerPoint(playerName: String, partyCode: String,points: Int,teamName: String? = nil) {
+    func updatePoint(playerName: String, partyCode: String,points: Int,teamName: String? = nil) {
         guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
             return
         }
@@ -167,12 +167,15 @@ final class PartyStoreViewModel {
             }
             if let playerIndex = parties[partyIndex].teams[teamIndex].players.firstIndex(where: { $0.name == playerName }) {
                 parties[partyIndex].teams[teamIndex].players[playerIndex].score += points
+                parties[partyIndex].teamLeaderBoard[teamID]! += points
+                
             } else {
                 return
             }
-        }else{
+        } else {
             if let playerIndex = parties[partyIndex].players.firstIndex(where: { $0.name == playerName }) {
                 parties[partyIndex].players[playerIndex].score += points
+                parties[partyIndex].playerLeaderBoard[playerName]! += points
             } else {
                 return
             }
