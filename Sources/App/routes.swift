@@ -119,6 +119,19 @@ func routes(_ app: Application) throws {
         }
     }
     
+    app.post("createTeams", ":partyCode"){ req -> [Team] in
+        guard let partyCode = try? req.parameters.require("partyCode", as: String.self),
+              let teams = try? req.content.decode([Team].self) else {
+            throw Abort(.badRequest)
+        }
+        guard let party = partyStoreViewModel.getPartyByCode(partyCode) else {
+            print("partycode not found")
+            throw Abort(.notFound)
+        }
+        partyStoreViewModel.addTeamsToParty(partyCode: partyCode, teams: teams)
+        return teams
+    }
+    
     app.get("getTeams",":partyCode") { req -> [Team] in
         guard let partyCode = req.parameters.get("partyCode", as: String.self) else {
             throw Abort(.badRequest)

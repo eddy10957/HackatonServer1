@@ -109,6 +109,18 @@ final class PartyStoreViewModel {
         }
     }
     
+    func addTeamsToParty(partyCode: String,teams: [Team]) -> Bool {
+        guard let partyIndex = parties.firstIndex(where: { $0.code == partyCode }) else {
+            return true
+        }
+        
+        parties[partyIndex].teams.append(contentsOf: teams)
+        for team in teams {
+            parties[partyIndex].teamLeaderBoard[team.name] = 0
+        }
+        return true
+    }
+    
     func getTeam(partyCode: String ,teamID: UUID) -> Team? {
         let party = self.getPartyByCode(partyCode)
         return party?.teams.first(where: { $0.id == teamID })
