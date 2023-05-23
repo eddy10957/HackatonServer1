@@ -2,13 +2,10 @@ import Vapor
 import Foundation
 
 
-//TODO: - Check If party is not started in order to add ppl or teams to it
+//TODO: 
 //      - Check if party is Group or individual and accept only the correct way to add ppl to party
 //      - Change model of question in order to have all the different minigames under that struct
 
-
-
-//      - Dato che sono stronzo e ho fatto dei controlli sui nomi, non dobbiamo permettere nicknames e nomi di team uguali. Controllo che nono sono già presenti altri player e team con quel nome.
 //      - Check party code non esiste prima di assegnarlo.
 //      - Change Party model by adding a boolean to change mode between individual or team ( POTREBBE NON SERVIRE PENSIAMOCI. )
 
@@ -110,11 +107,16 @@ func routes(_ app: Application) throws {
         }
         
         
-        let team = Team(name: teamName)
-        if partyStoreViewModel.addTeamToParty(party.id!, team: team.id!, name: team.name) {
-            return team
-        } else {
+        
+        if party.isGameStarted {
             throw Abort(.imATeapot)
+        } else {
+            let team = Team(name: teamName)
+            if partyStoreViewModel.addTeamToParty(party.id!, team: team.id!, name: team.name) {
+                return team
+            } else {
+                throw Abort(.imATeapot)
+            }
         }
     }
     

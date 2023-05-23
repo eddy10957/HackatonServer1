@@ -112,19 +112,20 @@ final class PartyStoreViewModel {
             return true
         }
         
-        // TODO: Aggiungi controllo nickname
         
-        if parties[partyIndex].players.contains(where: {$0.name.lowercased() == nickname.lowercased()}) {
+        if parties[partyIndex].isGameStarted {
             return false
         } else {
-            // Add the player to the party's team
-            let player = Player(name: nickname)
-            parties[partyIndex].players.append(player)
-            parties[partyIndex].playerLeaderBoard[player.name] = 0
-            return true
+            if parties[partyIndex].players.contains(where: {$0.name.lowercased() == nickname.lowercased()}) {
+                return false
+            } else {
+                // Add the player to the party's team
+                let player = Player(name: nickname)
+                parties[partyIndex].players.append(player)
+                parties[partyIndex].playerLeaderBoard[player.name] = 0
+                return true
+            } 
         }
-        
-       
     }
     
     func addPlayerToTeam(_ partyID: UUID, playerID: UUID,teamID: UUID, nickname: String) -> Bool {
